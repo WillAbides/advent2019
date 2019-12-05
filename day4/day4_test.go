@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"advent2019"
+	"advent2019/lib"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -30,12 +30,12 @@ func consecutiveRule2(dgts []int) bool {
 }
 
 func isInTrip(i int, dgts []int) bool {
-	_, repeatLength := advent2019.RepeatAtIndex(dgts, i)
+	_, repeatLength := lib.RepeatAtIndex(dgts, i)
 	return repeatLength > 2
 }
 
 func Test_isInTrip(t *testing.T) {
-	dgts := advent2019.IntDigits(123444)
+	dgts := lib.IntDigits(123444)
 	assert.True(t, isInTrip(5, dgts))
 	assert.True(t, isInTrip(4, dgts))
 	assert.True(t, isInTrip(3, dgts))
@@ -66,7 +66,7 @@ func Test_consecutiveRule(t *testing.T) {
 }
 
 func calcCombo(n int) bool {
-	dgts := advent2019.IntDigits(n)
+	dgts := lib.IntDigits(n)
 	if !consecutiveRule(dgts) {
 		return false
 	}
@@ -77,7 +77,7 @@ func calcCombo(n int) bool {
 }
 
 func calcCombo2(n int) bool {
-	dgts := advent2019.IntDigits(n)
+	dgts := lib.IntDigits(n)
 	if !consecutiveRule2(dgts) {
 		return false
 	}

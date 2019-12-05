@@ -6,8 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type point struct {
@@ -217,52 +215,52 @@ func TestIntersects(t *testing.T) {
 	candidates := intersects(ptsA, ptsB)
 	fmt.Println(candidates)
 }
-
-func TestEx2(t *testing.T) {
-	for _, td := range []struct {
-		a, b string
-		want int
-	}{
-		{
-			"R75,D30,R83,U83,L12,D49,R71,U7,L72",
-			"U62,R66,U55,R34,D71,R55,D58,R83",
-			610,
-		},
-		{
-			"R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51",
-			"U98,R91,D20,R16,D67,R40,U7,R15,U6,R7",
-			410,
-		},
-	} {
-		t.Run("", func(t *testing.T) {
-			got := calc(td.a, td.b)
-			assert.Equal(t, td.want, got)
-		})
-	}
-}
-
-func TestEx1(t *testing.T) {
-	for _, td := range []struct {
-		a, b string
-		want int
-	}{
-		{
-			"R75,D30,R83,U83,L12,D49,R71,U7,L72",
-			"U62,R66,U55,R34,D71,R55,D58,R83",
-			159,
-		},
-		{
-			"R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51",
-			"U98,R91,D20,R16,D67,R40,U7,R15,U6,R7",
-			135,
-		},
-	} {
-		t.Run("", func(t *testing.T) {
-			got := calc(td.a, td.b)
-			assert.Equal(t, td.want, got)
-		})
-	}
-}
+//
+//func TestEx2(t *testing.T) {
+//	for _, td := range []struct {
+//		a, b string
+//		want int
+//	}{
+//		{
+//			"R75,D30,R83,U83,L12,D49,R71,U7,L72",
+//			"U62,R66,U55,R34,D71,R55,D58,R83",
+//			610,
+//		},
+//		{
+//			"R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51",
+//			"U98,R91,D20,R16,D67,R40,U7,R15,U6,R7",
+//			410,
+//		},
+//	} {
+//		t.Run("", func(t *testing.T) {
+//			got := calc(td.a, td.b)
+//			assert.Equal(t, td.want, got)
+//		})
+//	}
+//}
+//
+//func TestEx1(t *testing.T) {
+//	for _, td := range []struct {
+//		a, b string
+//		want int
+//	}{
+//		{
+//			"R75,D30,R83,U83,L12,D49,R71,U7,L72",
+//			"U62,R66,U55,R34,D71,R55,D58,R83",
+//			159,
+//		},
+//		{
+//			"R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51",
+//			"U98,R91,D20,R16,D67,R40,U7,R15,U6,R7",
+//			135,
+//		},
+//	} {
+//		t.Run("", func(t *testing.T) {
+//			got := calc(td.a, td.b)
+//			assert.Equal(t, td.want, got)
+//		})
+//	}
+//}
 
 func TestPoints(t *testing.T) {
 	mvs := moves("R75,D30,R83,U83,L12,D49,R71,U7,L72")

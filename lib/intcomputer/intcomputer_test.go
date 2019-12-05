@@ -1,8 +1,10 @@
-package advent2019
+package intcomputer
 
 import (
 	"fmt"
 	"testing"
+
+	"advent2019/lib/intcomputer/operation"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -96,21 +98,17 @@ func TestFoo(t *testing.T) {
 		},
 	} {
 		t.Run("", func(t *testing.T) {
-			c := &IntComputer{
-				Memory: td.codes,
-				Cursor: 0,
-				Input:  td.input,
-				Output: -1,
-			}
+			output := &OutputRecorder{}
+			c := NewIntComputer(td.codes, output.HandleOutput, SimpleInputter(td.input))
 			c.RunOperations()
-			assert.Equal(t, td.want, c.Output)
+			assert.Equal(t, td.want, output.Outputs[0])
 		})
 	}
 }
 
 func TestOperation_OpCode(t *testing.T) {
 	for _, td := range []struct {
-		input Operation
+		input operation.Operation
 		want  int
 	}{
 		{0, 0},
@@ -125,26 +123,24 @@ func TestOperation_OpCode(t *testing.T) {
 }
 
 func TestOperation_ParamValues(t *testing.T) {
-	c := &IntComputer{
-		Memory: []int{1, 2, 3, 4, 5},
-	}
-	o := Operation(10101)
-	got := o.ParamValues(c, 3)
+	c := NewIntComputer([]int{1, 2, 3, 4, 5}, nil, nil)
+	o := operation.Operation(10101)
+	got := o.ParamValues(c.opComputer(), 3)
 	assert.Equal(t, []int{1, 3, 3}, got)
 }
 
 func TestOperation_ParamMode(t *testing.T) {
 	for _, td := range []struct {
-		input    Operation
+		input    operation.Operation
 		position int
-		want     ParameterMode
+		want     operation.ParameterMode
 	}{
-		{0, 0, PositionMode},
-		{0, 1, PositionMode},
-		{101, 0, ImmediateMode},
-		{1001, 1, ImmediateMode},
-		{10001, 2, ImmediateMode},
-		{10001, 1, PositionMode},
+		{0, 0, operation.PositionMode},
+		{0, 1, operation.PositionMode},
+		{101, 0, operation.ImmediateMode},
+		{1001, 1, operation.ImmediateMode},
+		{10001, 2, operation.ImmediateMode},
+		{10001, 1, operation.PositionMode},
 	} {
 		t.Run(fmt.Sprintf("%d", td.input), func(t *testing.T) {
 			assert.Equal(t, td.want, td.input.ParamMode(td.position))
@@ -181,11 +177,9 @@ func TestIntComputer_RunOperations(t *testing.T) {
 		},
 	} {
 		t.Run("", func(t *testing.T) {
-			c := &IntComputer{
-				Memory: td.input,
-			}
+			c := NewIntComputer(td.input, nil, nil)
 			c.RunOperations()
-			assert.Equal(t, td.want, c.Memory)
+			assert.Equal(t, td.want, c.memory)
 		})
 	}
 }

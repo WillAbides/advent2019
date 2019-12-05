@@ -1,4 +1,4 @@
-package advent2019
+package lib
 
 //IntDigits repeats the digits from n in base 10
 func IntDigits(n int) []int {
