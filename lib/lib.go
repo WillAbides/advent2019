@@ -1,5 +1,9 @@
 package lib
 
+import (
+	"io/ioutil"
+)
+
 //IntDigits repeats the digits from n in base 10
 func IntDigits(n int) []int {
 	if n < 0 {
@@ -69,4 +73,12 @@ func RepeatAtIndex(sl []int, i int) (start, length int) {
 		return jStart, jLength
 	}
 	return i, 1
+}
+
+func MustReadFile(file string) []byte {
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		panic(err)
+	}
+	return b
 }
