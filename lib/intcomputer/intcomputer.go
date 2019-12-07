@@ -163,6 +163,8 @@ func (c *IntComputer) nextPtr() int {
 }
 
 func (c *IntComputer) stop() {
-	c.onStop(c)
+	if c.onStop != nil {
+		c.onStop(c)
+	}
 	c.stopped = true
 }
