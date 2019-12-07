@@ -77,7 +77,12 @@ type IntComputer struct {
 	stopped       bool
 	inputter      Inputter
 	outputHandler OutputHandler
-	_opComputer *opComputer
+	onStop        func(c *IntComputer)
+	_opComputer   *opComputer
+}
+
+func (c *IntComputer) SetOnStop(onStop func(c *IntComputer)) {
+	c.onStop = onStop
 }
 
 func (c *IntComputer) output(n int) {
@@ -158,5 +163,6 @@ func (c *IntComputer) nextPtr() int {
 }
 
 func (c *IntComputer) stop() {
+	c.onStop(c)
 	c.stopped = true
 }

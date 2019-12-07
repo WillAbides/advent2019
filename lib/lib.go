@@ -2,6 +2,8 @@ package lib
 
 import (
 	"io/ioutil"
+	"strconv"
+	"strings"
 )
 
 //IntDigits repeats the digits from n in base 10
@@ -81,4 +83,49 @@ func MustReadFile(file string) []byte {
 		panic(err)
 	}
 	return b
+}
+
+//CSInts parses CSV of ints from the first line of input
+func CSInts(input string) []int {
+	var output []int
+	input = strings.TrimSpace(input)
+	input = strings.Split(input, "\n")[0]
+	for _, s := range strings.Split(input, ",") {
+		s = strings.TrimSpace(s)
+		v, err := strconv.Atoi(s)
+		if err != nil {
+			panic(err)
+		}
+		output = append(output, v)
+	}
+	return output
+}
+
+//IntSlicePermutations returns all permutations of a slice of ints
+func IntSlicePermutations(arr []int)[][]int{
+	var helper func([]int, int)
+	res := [][]int{}
+
+	helper = func(arr []int, n int){
+		if n == 1{
+			tmp := make([]int, len(arr))
+			copy(tmp, arr)
+			res = append(res, tmp)
+		} else {
+			for i := 0; i < n; i++{
+				helper(arr, n - 1)
+				if n % 2 == 1{
+					tmp := arr[i]
+					arr[i] = arr[n - 1]
+					arr[n - 1] = tmp
+				} else {
+					tmp := arr[0]
+					arr[0] = arr[n - 1]
+					arr[n - 1] = tmp
+				}
+			}
+		}
+	}
+	helper(arr, len(arr))
+	return res
 }
