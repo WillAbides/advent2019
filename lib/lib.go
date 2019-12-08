@@ -129,3 +129,15 @@ func IntSlicePermutations(arr []int)[][]int{
 	helper(arr, len(arr))
 	return res
 }
+
+//StringDigits returns a list of digits in a string omitting any non-digit characters
+func StringDigits(str string) []int {
+	result := make([]int, 0, len(str))
+	for _, r := range str {
+		i := int(r - 48)
+		if i >= 0 && i <= 9 {
+			result = append(result, i)
+		}
+	}
+	return result
+}
