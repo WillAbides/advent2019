@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var input = []int{3, 225, 1, 225, 6, 6, 1100, 1, 238, 225, 104, 0, 1101, 48, 82, 225, 102, 59, 84, 224, 1001, 224, -944,
+var input = []int64{3, 225, 1, 225, 6, 6, 1100, 1, 238, 225, 104, 0, 1101, 48, 82, 225, 102, 59, 84, 224, 1001, 224, -944,
 	224, 4, 224, 102, 8, 223, 223, 101, 6, 224, 224, 1, 223, 224, 223, 1101, 92, 58, 224, 101, -150, 224, 224, 4, 224,
 	102, 8, 223, 223, 1001, 224, 3, 224, 1, 224, 223, 223, 1102, 10, 89, 224, 101, -890, 224, 224, 4, 224, 1002, 223, 8,
 	223, 1001, 224, 5, 224, 1, 224, 223, 223, 1101, 29, 16, 225, 101, 23, 110, 224, 1001, 224, -95, 224, 4, 224, 102, 8,
@@ -43,7 +43,7 @@ func TestPart1(t *testing.T) {
 	c := intcomputer.NewIntComputer(input, output.HandleOutput, intcomputer.SimpleInputter(1))
 	c.RunOperations()
 	got := output.Outputs[len(output.Outputs)-1]
-	assert.Equal(t, 13547311, got)
+	assert.Equal(t, int64(13547311), got)
 }
 
 func TestPart2(t *testing.T) {
@@ -51,5 +51,5 @@ func TestPart2(t *testing.T) {
 	c := intcomputer.NewIntComputer(input, output.HandleOutput, intcomputer.SimpleInputter(5))
 	c.RunOperations()
 	got := output.Outputs[len(output.Outputs)-1]
-	assert.Equal(t, 236453, got)
+	assert.Equal(t, int64(236453), got)
 }

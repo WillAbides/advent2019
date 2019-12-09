@@ -86,8 +86,8 @@ func MustReadFile(file string) []byte {
 }
 
 //CSInts parses CSV of ints from the first line of input
-func CSInts(input string) []int {
-	var output []int
+func CSInts(input string) []int64 {
+	var output []int64
 	input = strings.TrimSpace(input)
 	input = strings.Split(input, "\n")[0]
 	for _, s := range strings.Split(input, ",") {
@@ -96,23 +96,23 @@ func CSInts(input string) []int {
 		if err != nil {
 			panic(err)
 		}
-		output = append(output, v)
+		output = append(output, int64(v))
 	}
 	return output
 }
 
 //IntSlicePermutations returns all permutations of a slice of ints
-func IntSlicePermutations(arr []int)[][]int{
-	var helper func([]int, int)
-	res := [][]int{}
+func IntSlicePermutations(arr []int64)[][]int64{
+	var helper func([]int64, int64)
+	res := [][]int64{}
 
-	helper = func(arr []int, n int){
+	helper = func(arr []int64, n int64){
 		if n == 1{
-			tmp := make([]int, len(arr))
+			tmp := make([]int64, len(arr))
 			copy(tmp, arr)
 			res = append(res, tmp)
 		} else {
-			for i := 0; i < n; i++{
+			for i := int64(0); i < n; i++{
 				helper(arr, n - 1)
 				if n % 2 == 1{
 					tmp := arr[i]
@@ -126,7 +126,7 @@ func IntSlicePermutations(arr []int)[][]int{
 			}
 		}
 	}
-	helper(arr, len(arr))
+	helper(arr, int64(len(arr)))
 	return res
 }
 

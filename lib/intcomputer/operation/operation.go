@@ -4,16 +4,16 @@ import (
 	"advent2019/lib"
 )
 
-type ParameterMode int
+type ParameterMode int64
 
 type Computer interface {
-	NextPtr(rel bool) int
-	NextInt() int
-	WritePosition(pos int, rel bool, val int)
-	NextInput() int
-	Output(int)
-	SetCursor(int)
-	UpdateRelativeBase(int)
+	NextPtr(rel bool) int64
+	NextInt() int64
+	WritePosition(pos int64, rel bool, val int64)
+	NextInput() int64
+	Output(int64)
+	SetCursor(int64)
+	UpdateRelativeBase(int64)
 	Stop()
 }
 
@@ -27,13 +27,13 @@ const NoOp = Operation(-999)
 
 type Operation int
 
-func (o Operation) OpCode() int {
-	return int(o) % 100
+func (o Operation) OpCode() int64 {
+	return int64(o) % 100
 }
 
-func (o Operation) ParamMode(param int) ParameterMode {
+func (o Operation) ParamMode(param int64) ParameterMode {
 	dgts := lib.ReverseInts(lib.IntDigits(int(o)))
-	if len(dgts) <= param+2 {
+	if int64(len(dgts)) <= param+2 {
 		return PositionMode
 	}
 	switch dgts[param+2] {
@@ -46,9 +46,9 @@ func (o Operation) ParamMode(param int) ParameterMode {
 	}
 }
 
-func (o Operation) ParamValues(c Computer, count int) []int {
-	result := make([]int, count)
-	for i := 0; i < count; i++ {
+func (o Operation) ParamValues(c Computer, count int64) []int64 {
+	result := make([]int64, count)
+	for i := int64(0); i < count; i++ {
 		switch o.ParamMode(i) {
 		case PositionMode:
 			result[i] = c.NextPtr(false)
