@@ -1,4 +1,4 @@
-module advent2019
+module github.com/WillAbides/advent2019
 
 go 1.13
 

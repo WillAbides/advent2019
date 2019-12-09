@@ -3,7 +3,7 @@ package intcomputer
 import (
 	"fmt"
 
-	"advent2019/lib/intcomputer/operation"
+	"github.com/WillAbides/advent2019/lib/intcomputer/operation"
 )
 
 func SimpleInputter(vals ...int64) func() int64 {

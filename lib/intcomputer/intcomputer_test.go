@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"advent2019/lib/intcomputer/operation"
+	"github.com/WillAbides/advent2019/lib/intcomputer/operation"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -3,7 +3,7 @@ package day5
 import (
 	"testing"
 
-	"advent2019/lib/intcomputer"
+	"github.com/WillAbides/advent2019/lib/intcomputer"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"advent2019/lib"
-	"advent2019/lib/intcomputer"
+	"github.com/WillAbides/advent2019/lib"
+	"github.com/WillAbides/advent2019/lib/intcomputer"
 
 	"github.com/stretchr/testify/assert"
 )

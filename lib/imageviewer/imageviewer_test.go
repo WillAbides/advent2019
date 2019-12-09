@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"advent2019/lib"
+	"github.com/WillAbides/advent2019/lib"
 
 	"github.com/stretchr/testify/assert"
 )

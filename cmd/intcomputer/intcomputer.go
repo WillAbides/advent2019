@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"advent2019/lib"
-	"advent2019/lib/intcomputer"
+	"github.com/WillAbides/advent2019/lib"
+	"github.com/WillAbides/advent2019/lib/intcomputer"
 )
 
 func errOut(message ...interface{}) {

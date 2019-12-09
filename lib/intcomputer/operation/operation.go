@@ -1,7 +1,7 @@
 package operation
 
 import (
-	"advent2019/lib"
+	"github.com/WillAbides/advent2019/lib"
 )
 
 type ParameterMode int64
