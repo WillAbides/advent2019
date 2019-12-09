@@ -49,8 +49,9 @@ func main() {
 	}
 	programFile := os.Args[1]
 	strings.TrimSpace(string(lib.MustReadFile(programFile)))
-	outputHandler := func(_ *intcomputer.IntComputer, n int64) {
+	outputHandler := func(_ *intcomputer.IntComputer, n int64) error {
 		fmt.Println(n)
+		return nil
 	}
 	program := lib.CSInts(strings.TrimSpace(string(lib.MustReadFile(programFile))))
 	c := intcomputer.NewIntComputer(program, outputHandler, inputter)

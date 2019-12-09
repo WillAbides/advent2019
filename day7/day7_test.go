@@ -28,12 +28,13 @@ func (a *amp) start(done func()) {
 		got := <-a.inputCh
 		return got, nil
 	}
-	outputHandler := func(c *intcomputer.IntComputer, n int64) {
+	outputHandler := func(c *intcomputer.IntComputer, n int64) error {
 		a.lastOutput = n
 		select {
 		case a.outputCh <- n:
 		case <-time.After(time.Millisecond):
 		}
+		return nil
 	}
 	computer := intcomputer.NewIntComputer(a.program, outputHandler, inputter)
 	computer.SetOnStop(func(_ *intcomputer.IntComputer) {

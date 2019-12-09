@@ -25,8 +25,9 @@ type OutputRecorder struct {
 	Outputs []int64
 }
 
-func (o *OutputRecorder) HandleOutput(_ *IntComputer, n int64) {
+func (o *OutputRecorder) HandleOutput(_ *IntComputer, n int64) error {
 	o.Outputs = append(o.Outputs, n)
+	return nil
 }
 
 //opComputer implements operations.Computer
@@ -66,8 +67,8 @@ func (o *opComputer) UpdateRelativeBase(n int64) {
 	o.setRelativeBase(o.relativeBase + n)
 }
 
-func (o *opComputer) Output(n int64) {
-	o.output(n)
+func (o *opComputer) Output(n int64) error {
+	return o.output(n)
 }
 
 func (o *opComputer) NewError(message string) *ComputerErr {
@@ -78,7 +79,7 @@ var _ Computer = &opComputer{}
 
 type Inputter func() (int64, error)
 
-type OutputHandler func(c *IntComputer, n int64)
+type OutputHandler func(c *IntComputer, n int64) error
 
 func NewIntComputer(mem []int64, outputHandler OutputHandler, inputter Inputter) *IntComputer {
 	c := &IntComputer{
@@ -139,12 +140,12 @@ func (c *IntComputer) State() *ComputerState {
 	}
 }
 
-func (c *IntComputer) output(n int64) {
+func (c *IntComputer) output(n int64) error {
 	if c.outputHandler != nil {
-		c.outputHandler(c, n)
-		return
+		return c.outputHandler(c, n)
 	}
 	fmt.Println(n)
+	return nil
 }
 
 func (c *IntComputer) opComputer() *opComputer {

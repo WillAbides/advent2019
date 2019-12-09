@@ -11,7 +11,7 @@ type Computer interface {
 	NextInt() (int64, error)
 	WritePosition(pos int64, rel bool, val int64) error
 	NextInput() (int64, error)
-	Output(int64)
+	Output(int64) error
 	SetCursor(int64) error
 	UpdateRelativeBase(int64)
 	Stop()
@@ -130,8 +130,7 @@ var OpFuncs = map[int64]OpFunc{
 		if err != nil {
 			return err
 		}
-		c.Output(params[0])
-		return nil
+		return c.Output(params[0])
 	},
 
 	// Opcode 5 is jump-if-true: if the first parameter is non-zero, it sets the instruction pointer to the value from
