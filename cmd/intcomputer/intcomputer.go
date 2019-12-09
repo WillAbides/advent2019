@@ -39,12 +39,8 @@ func main() {
 	}
 	scanner := bufio.NewScanner(os.Stdin)
 
-	inputter := func() int64 {
-		got, err := getInput(usePrompt, scanner)
-		if err != nil {
-			panic(err)
-		}
-		return got
+	inputter := func() (int64, error) {
+		return getInput(usePrompt, scanner)
 	}
 
 	if len(os.Args) != 2 {

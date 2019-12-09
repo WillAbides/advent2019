@@ -24,9 +24,9 @@ func (a *amp) writeInput(input int64) {
 }
 
 func (a *amp) start(done func()) {
-	inputter := func() int64 {
+	inputter := func() (int64, error) {
 		got := <-a.inputCh
-		return got
+		return got, nil
 	}
 	outputHandler := func(c *intcomputer.IntComputer, n int64) {
 		a.lastOutput = n

@@ -13,11 +13,11 @@ func (c *ComputerErr) Error() string {
 	return c.Message
 }
 
-func SimpleInputter(vals ...int64) func() int64 {
-	return func() int64 {
+func SimpleInputter(vals ...int64) func() (int64, error) {
+	return func() (int64, error) {
 		var val int64
 		val, vals = vals[len(vals)-1], vals[:len(vals)-1]
-		return val
+		return val, nil
 	}
 }
 
@@ -43,7 +43,7 @@ func (o *opComputer) Stop() {
 }
 
 func (o *opComputer) NextInput() (int64, error) {
-	return o.inputter(), nil
+	return o.inputter()
 }
 
 func (o *opComputer) NextInt() (int64, error) {
@@ -76,7 +76,7 @@ func (o *opComputer) NewError(message string) *ComputerErr {
 
 var _ Computer = &opComputer{}
 
-type Inputter func() int64
+type Inputter func() (int64, error)
 
 type OutputHandler func(c *IntComputer, n int64)
 
