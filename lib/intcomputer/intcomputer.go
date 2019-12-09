@@ -4,6 +4,15 @@ import (
 	"fmt"
 )
 
+type ComputerErr struct {
+	State *ComputerState
+	Message string
+}
+
+func (c *ComputerErr) Error() string {
+	return c.Message
+}
+
 func SimpleInputter(vals ...int64) func() int64 {
 	return func() int64 {
 		var val int64
@@ -79,6 +88,17 @@ func NewIntComputer(mem []int64, outputHandler OutputHandler, inputter Inputter)
 	return c
 }
 
+type ComputerState struct {
+	Memory       map[int64]int64
+	Cursor       int64
+	RelativeBase int64
+	Stopped      bool
+}
+
+func (c *ComputerState) String() string {
+	return fmt.Sprintf("%#v", c)
+}
+
 type IntComputer struct {
 	relativeBase  int64
 	memory        map[int64]int64
@@ -93,6 +113,19 @@ type IntComputer struct {
 
 func (c *IntComputer) SetOnStop(onStop func(c *IntComputer)) {
 	c.onStop = onStop
+}
+
+func (c *IntComputer) State() *ComputerState {
+	mem := make(map[int64]int64, len(c.memory))
+	for k, v := range c.memory {
+		mem[k] = v
+	}
+	return &ComputerState{
+		Memory:       mem,
+		Cursor:       c.cursor,
+		RelativeBase: c.relativeBase,
+		Stopped:      c.stopped,
+	}
 }
 
 func (c *IntComputer) output(n int64) {
@@ -110,21 +143,27 @@ func (c *IntComputer) opComputer() *opComputer {
 	return c._opComputer
 }
 
-func (c *IntComputer) RunOperations() {
+func (c *IntComputer) RunOperations() error {
 	if c.opFuncs == nil {
 		c.opFuncs = OpFuncs
 	}
 	for {
 		if c.stopped {
-			return
+			return nil
 		}
 		op := c.nextOperation()
 		if op == NoOp {
-			return
+			return &ComputerErr{
+				Message: "encountered unexpected NoOp",
+				State: c.State(),
+			}
 		}
 		opFunc := c.opFuncs[op.OpCode()]
 		if opFunc == nil {
-			return
+			return &ComputerErr{
+				Message: "encountered unknown operation",
+				State: c.State(),
+			}
 		}
 		opFunc(op, c.opComputer())
 	}
@@ -139,7 +178,8 @@ func (c *IntComputer) setRelativeBase(n int64) {
 }
 
 func (c *IntComputer) nextOperation() Operation {
-	if !c.nasNext() {
+	_, ok := c.memory[c.cursor]
+	if !ok {
 		return NoOp
 	}
 	return Operation(c.nextInt())

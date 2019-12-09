@@ -18,7 +18,7 @@ func TestOutput(t *testing.T) {
 			want:  []int64{109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99},
 		},
 		{
-			codes: []int64{109, 1, 204, -1, 1001},
+			codes: []int64{109, 1, 204, -1, 1001, 0, 0, 0, 99},
 			want:  []int64{109},
 		},
 		{
@@ -114,7 +114,8 @@ func TestOutput(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			output := &OutputRecorder{}
 			c := NewIntComputer(td.codes, output.HandleOutput, SimpleInputter(td.inputs...))
-			c.RunOperations()
+			err := c.RunOperations()
+			assert.NoError(t, err)
 			assert.Equal(t, td.want, output.Outputs)
 		})
 	}
@@ -199,7 +200,7 @@ func TestIntComputer_RunOperations(t *testing.T) {
 				return mem
 			}
 			c := NewIntComputer(td.input, nil, nil)
-			c.RunOperations()
+			assert.NoError(t, c.RunOperations())
 			wantMem := makeTestMemory(td.want)
 			assert.Equal(t, wantMem, c.memory)
 		})

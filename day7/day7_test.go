@@ -39,7 +39,12 @@ func (a *amp) start(done func()) {
 	computer.SetOnStop(func(_ *intcomputer.IntComputer) {
 		done()
 	})
-	go computer.RunOperations()
+	go func() {
+		gerr := computer.RunOperations()
+		if gerr != nil {
+			panic(gerr)
+		}
+	}()
 	a.inputCh <- a.phaseSetting
 }
 

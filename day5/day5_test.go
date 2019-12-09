@@ -41,7 +41,7 @@ var input = []int64{3, 225, 1, 225, 6, 6, 1100, 1, 238, 225, 104, 0, 1101, 48, 8
 func TestPart1(t *testing.T) {
 	output := &intcomputer.OutputRecorder{}
 	c := intcomputer.NewIntComputer(input, output.HandleOutput, intcomputer.SimpleInputter(1))
-	c.RunOperations()
+	assert.NoError(t, c.RunOperations())
 	got := output.Outputs[len(output.Outputs)-1]
 	assert.Equal(t, int64(13547311), got)
 }
@@ -49,7 +49,7 @@ func TestPart1(t *testing.T) {
 func TestPart2(t *testing.T) {
 	output := &intcomputer.OutputRecorder{}
 	c := intcomputer.NewIntComputer(input, output.HandleOutput, intcomputer.SimpleInputter(5))
-	c.RunOperations()
+	assert.NoError(t, c.RunOperations())
 	got := output.Outputs[len(output.Outputs)-1]
 	assert.Equal(t, int64(236453), got)
 }

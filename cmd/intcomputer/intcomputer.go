@@ -58,5 +58,8 @@ func main() {
 	}
 	program := lib.CSInts(strings.TrimSpace(string(lib.MustReadFile(programFile))))
 	c := intcomputer.NewIntComputer(program, outputHandler, inputter)
-	c.RunOperations()
+	err = c.RunOperations()
+	if err != nil {
+		panic(err)
+	}
 }
