@@ -7,18 +7,20 @@ import (
 type ParameterMode int
 
 type Computer interface {
-	NextPtr() int
+	NextPtr(rel bool) int
 	NextInt() int
-	WritePosition(pos, val int)
+	WritePosition(pos int, rel bool, val int)
 	NextInput() int
 	Output(int)
 	SetCursor(int)
+	UpdateRelativeBase(int)
 	Stop()
 }
 
 const (
 	PositionMode  ParameterMode = 0
 	ImmediateMode ParameterMode = 1
+	RelativeMode  ParameterMode = 2
 )
 
 const NoOp = Operation(-999)
@@ -37,6 +39,8 @@ func (o Operation) ParamMode(param int) ParameterMode {
 	switch dgts[param+2] {
 	case 1:
 		return ImmediateMode
+	case 2:
+		return RelativeMode
 	default:
 		return PositionMode
 	}
@@ -47,7 +51,9 @@ func (o Operation) ParamValues(c Computer, count int) []int {
 	for i := 0; i < count; i++ {
 		switch o.ParamMode(i) {
 		case PositionMode:
-			result[i] = c.NextPtr()
+			result[i] = c.NextPtr(false)
+		case RelativeMode:
+			result[i] = c.NextPtr(true)
 		case ImmediateMode:
 			result[i] = c.NextInt()
 		default:
@@ -58,4 +64,3 @@ func (o Operation) ParamValues(c Computer, count int) []int {
 }
 
 type OpFunc func(op Operation, c Computer)
-

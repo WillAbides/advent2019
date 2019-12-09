@@ -18,9 +18,17 @@ type OutputRecorder struct {
 	Outputs []int
 }
 
+func (o *OutputRecorder) HandleOutput(_ *IntComputer, n int) {
+	o.Outputs = append(o.Outputs, n)
+}
+
 //opComputer implements operations.Computer
 type opComputer struct {
 	*IntComputer
+}
+
+func (o *opComputer) Computer() *IntComputer {
+	return o.IntComputer
 }
 
 func (o *opComputer) Stop() {
@@ -35,15 +43,20 @@ func (o *opComputer) NextInt() int {
 	return o.nextInt()
 }
 
-func (o *opComputer) NextPtr() int {
-	return o.nextPtr()
+func (o *opComputer) NextPtr(rel bool) int {
+	return o.nextPtr(rel)
 }
-func (o *opComputer) WritePosition(pos, val int) {
-	o.writePosition(pos, val)
+
+func (o *opComputer) WritePosition(pos int, rel bool, val int) {
+	o.writePosition(pos, rel, val)
 }
 
 func (o *opComputer) SetCursor(n int) {
 	o.setCursor(n)
+}
+
+func (o *opComputer) UpdateRelativeBase(n int) {
+	o.setRelativeBase(o.relativeBase + n)
 }
 
 func (o *opComputer) Output(n int) {
@@ -52,26 +65,25 @@ func (o *opComputer) Output(n int) {
 
 var _ operation.Computer = &opComputer{}
 
-func (o *OutputRecorder) HandleOutput(_ *IntComputer, n int) {
-	o.Outputs = append(o.Outputs, n)
-}
-
 type Inputter func() int
 
 type OutputHandler func(c *IntComputer, n int)
 
 func NewIntComputer(mem []int, outputHandler OutputHandler, inputter Inputter) *IntComputer {
 	c := &IntComputer{
-		memory:        make([]int, len(mem)),
+		memory:        make(map[int]int, len(mem)),
 		inputter:      inputter,
 		outputHandler: outputHandler,
 	}
-	copy(c.memory, mem)
+	for k, v := range mem {
+		c.memory[k] = v
+	}
 	return c
 }
 
 type IntComputer struct {
-	memory        []int
+	relativeBase  int
+	memory        map[int]int
 	cursor        int
 	opFuncs       map[int]operation.OpFunc
 	stopped       bool
@@ -124,6 +136,10 @@ func (c *IntComputer) setCursor(n int) {
 	c.cursor = n
 }
 
+func (c *IntComputer) setRelativeBase(n int) {
+	c.relativeBase = n
+}
+
 func (c *IntComputer) nextOperation() operation.Operation {
 	if !c.nasNext() {
 		return operation.NoOp
@@ -140,15 +156,20 @@ func (c *IntComputer) nextOpFunc() operation.OpFunc {
 }
 
 func (c *IntComputer) nasNext() bool {
-	return c.cursor < (len(c.memory) - 1)
+	_, ok := c.memory[c.cursor+1]
+	return ok
 }
 
 func (c *IntComputer) ReadPosition(pos int) int {
 	return c.memory[pos]
 }
 
-func (c *IntComputer) writePosition(pos, val int) {
-	c.memory[pos] = val
+func (c *IntComputer) writePosition(pos int, rel bool ,val int) {
+	target := pos
+	if rel {
+		target = pos + c.relativeBase
+	}
+	c.memory[target] = val
 }
 
 func (c *IntComputer) nextInt() int {
@@ -157,8 +178,13 @@ func (c *IntComputer) nextInt() int {
 	return res
 }
 
-func (c *IntComputer) nextPtr() int {
+func (c *IntComputer) nextPtr(rel bool) int {
 	ptr := c.nextInt()
+
+	if rel {
+		ptr = ptr + c.relativeBase
+		_ = ptr
+	}
 	return c.ReadPosition(ptr)
 }
 

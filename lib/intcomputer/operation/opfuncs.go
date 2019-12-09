@@ -6,20 +6,32 @@ var OpFuncs = map[int]OpFunc{
 	//which you should read the input values, and the third indicates the position at which the output should be stored.
 	1: func(op Operation, c Computer) {
 		params := op.ParamValues(c, 2)
-		c.WritePosition(c.NextInt(), params[0]+params[1])
+		rel := false
+		if op.ParamMode(len(params)) == RelativeMode {
+			rel = true
+		}
+		c.WritePosition(c.NextInt(), rel, params[0]+params[1])
 	},
 
 	//Opcode 2 works exactly like opcode 1, except it multiplies the two inputs instead of adding them. Again, the three
 	//integers after the opcode indicate
 	2: func(op Operation, c Computer) {
 		params := op.ParamValues(c, 2)
-		c.WritePosition(c.NextInt(), params[0]*params[1])
+		rel := false
+		if op.ParamMode(len(params)) == RelativeMode {
+			rel = true
+		}
+		c.WritePosition(c.NextInt(), rel, params[0]*params[1])
 	},
 
 	// Opcode 3 takes a single integer as input and saves it to the position given by its only parameter. For example,
 	//the instruction 3,50 would take an input value and store it at address 50.
 	3: func(op Operation, c Computer) {
-		c.WritePosition(c.NextInt(), c.NextInput())
+		rel := false
+		if op.ParamMode(0) == RelativeMode {
+			rel = true
+		}
+		c.WritePosition(c.NextInt(),rel, c.NextInput())
 	},
 
 	//Opcode 4 outputs the value of its only parameter. For example, the instruction 4,50 would output the value at
@@ -55,7 +67,11 @@ var OpFuncs = map[int]OpFunc{
 		if params[0] < params[1] {
 			val = 1
 		}
-		c.WritePosition(c.NextInt(), val)
+		rel := false
+		if op.ParamMode(len(params)) == RelativeMode {
+			rel = true
+		}
+		c.WritePosition(c.NextInt(), rel, val)
 	},
 
 	//Opcode 8 is equals: if the first parameter is equal to the second parameter, it stores 1 in the position given by the
@@ -66,7 +82,18 @@ var OpFuncs = map[int]OpFunc{
 		if params[0] == params[1] {
 			val = 1
 		}
-		c.WritePosition(c.NextInt(), val)
+		rel := false
+		if op.ParamMode(len(params)) == RelativeMode {
+			rel = true
+		}
+		c.WritePosition(c.NextInt(), rel, val)
+	},
+
+	//Opcode 9 adjusts the relative base by the value of its only parameter. The relative base increases (or decreases,
+	//if the value is negative) by the value of the parameter.
+	9: func(op Operation, c Computer) {
+		params := op.ParamValues(c, 1)
+		c.UpdateRelativeBase(params[0])
 	},
 
 	//Opcode 99 stops processing operations
