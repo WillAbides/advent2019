@@ -2,8 +2,6 @@ package intcomputer
 
 import (
 	"fmt"
-
-	"github.com/WillAbides/advent2019/lib/intcomputer/operation"
 )
 
 func SimpleInputter(vals ...int64) func() int64 {
@@ -63,7 +61,7 @@ func (o *opComputer) Output(n int64) {
 	o.output(n)
 }
 
-var _ operation.Computer = &opComputer{}
+var _ Computer = &opComputer{}
 
 type Inputter func() int64
 
@@ -85,7 +83,7 @@ type IntComputer struct {
 	relativeBase  int64
 	memory        map[int64]int64
 	cursor        int64
-	opFuncs       map[int64]operation.OpFunc
+	opFuncs       map[int64]OpFunc
 	stopped       bool
 	inputter      Inputter
 	outputHandler OutputHandler
@@ -114,14 +112,14 @@ func (c *IntComputer) opComputer() *opComputer {
 
 func (c *IntComputer) RunOperations() {
 	if c.opFuncs == nil {
-		c.opFuncs = operation.OpFuncs
+		c.opFuncs = OpFuncs
 	}
 	for {
 		if c.stopped {
 			return
 		}
 		op := c.nextOperation()
-		if op == operation.NoOp {
+		if op == NoOp {
 			return
 		}
 		opFunc := c.opFuncs[op.OpCode()]
@@ -140,14 +138,14 @@ func (c *IntComputer) setRelativeBase(n int64) {
 	c.relativeBase = n
 }
 
-func (c *IntComputer) nextOperation() operation.Operation {
+func (c *IntComputer) nextOperation() Operation {
 	if !c.nasNext() {
-		return operation.NoOp
+		return NoOp
 	}
-	return operation.Operation(c.nextInt())
+	return Operation(c.nextInt())
 }
 
-func (c *IntComputer) nextOpFunc() operation.OpFunc {
+func (c *IntComputer) nextOpFunc() OpFunc {
 	if !c.nasNext() {
 		return nil
 	}

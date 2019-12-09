@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/WillAbides/advent2019/lib/intcomputer/operation"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -124,7 +122,7 @@ func TestOutput(t *testing.T) {
 
 func TestOperation_OpCode(t *testing.T) {
 	for _, td := range []struct {
-		input operation.Operation
+		input Operation
 		want  int64
 	}{
 		{0, 0},
@@ -140,23 +138,23 @@ func TestOperation_OpCode(t *testing.T) {
 
 func TestOperation_ParamValues(t *testing.T) {
 	c := NewIntComputer([]int64{1, 2, 3, 4, 5}, nil, nil)
-	o := operation.Operation(10101)
+	o := Operation(10101)
 	got := o.ParamValues(c.opComputer(), 3)
 	assert.Equal(t, []int64{1, 3, 3}, got)
 }
 
 func TestOperation_ParamMode(t *testing.T) {
 	for _, td := range []struct {
-		input    operation.Operation
+		input    Operation
 		position int64
-		want     operation.ParameterMode
+		want     ParameterMode
 	}{
-		{0, 0, operation.PositionMode},
-		{0, 1, operation.PositionMode},
-		{101, 0, operation.ImmediateMode},
-		{1001, 1, operation.ImmediateMode},
-		{10001, 2, operation.ImmediateMode},
-		{10001, 1, operation.PositionMode},
+		{0, 0, PositionMode},
+		{0, 1, PositionMode},
+		{101, 0, ImmediateMode},
+		{1001, 1, ImmediateMode},
+		{10001, 2, ImmediateMode},
+		{10001, 1, PositionMode},
 	} {
 		t.Run(fmt.Sprintf("%d", td.input), func(t *testing.T) {
 			assert.Equal(t, td.want, td.input.ParamMode(td.position))
