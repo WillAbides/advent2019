@@ -5,7 +5,7 @@ import (
 )
 
 type ComputerErr struct {
-	State *ComputerState
+	State   *ComputerState
 	Message string
 }
 
@@ -42,24 +42,24 @@ func (o *opComputer) Stop() {
 	o.stop()
 }
 
-func (o *opComputer) NextInput() int64 {
-	return o.inputter()
+func (o *opComputer) NextInput() (int64, error) {
+	return o.inputter(), nil
 }
 
-func (o *opComputer) NextInt() int64 {
+func (o *opComputer) NextInt() (int64, error) {
 	return o.nextInt()
 }
 
-func (o *opComputer) NextPtr(rel bool) int64 {
+func (o *opComputer) NextPtr(rel bool) (int64, error) {
 	return o.nextPtr(rel)
 }
 
-func (o *opComputer) WritePosition(pos int64, rel bool, val int64) {
-	o.writePosition(pos, rel, val)
+func (o *opComputer) WritePosition(pos int64, rel bool, val int64) error {
+	return o.writePosition(pos, rel, val)
 }
 
-func (o *opComputer) SetCursor(n int64) {
-	o.setCursor(n)
+func (o *opComputer) SetCursor(n int64) error {
+	return o.setCursor(n)
 }
 
 func (o *opComputer) UpdateRelativeBase(n int64) {
@@ -68,6 +68,10 @@ func (o *opComputer) UpdateRelativeBase(n int64) {
 
 func (o *opComputer) Output(n int64) {
 	o.output(n)
+}
+
+func (o *opComputer) NewError(message string) *ComputerErr {
+	return o.Computer().NewError(message)
 }
 
 var _ Computer = &opComputer{}
@@ -111,6 +115,13 @@ type IntComputer struct {
 	_opComputer   *opComputer
 }
 
+func (c *IntComputer) NewError(message string) *ComputerErr {
+	return &ComputerErr{
+		Message: message,
+		State:   c.State(),
+	}
+}
+
 func (c *IntComputer) SetOnStop(onStop func(c *IntComputer)) {
 	c.onStop = onStop
 }
@@ -151,46 +162,52 @@ func (c *IntComputer) RunOperations() error {
 		if c.stopped {
 			return nil
 		}
-		op := c.nextOperation()
+		op, err := c.nextOperation()
+		if err != nil {
+			return err
+		}
 		if op == NoOp {
 			return &ComputerErr{
 				Message: "encountered unexpected NoOp",
-				State: c.State(),
+				State:   c.State(),
 			}
 		}
 		opFunc := c.opFuncs[op.OpCode()]
 		if opFunc == nil {
 			return &ComputerErr{
 				Message: "encountered unknown operation",
-				State: c.State(),
+				State:   c.State(),
 			}
 		}
-		opFunc(op, c.opComputer())
+		err = opFunc(op, c.opComputer())
+		if err != nil {
+			return err
+		}
 	}
 }
 
-func (c *IntComputer) setCursor(n int64) {
+func (c *IntComputer) setCursor(n int64) error {
+	if n < 0 {
+		return c.NewError("attempting to set cursor to negative value")
+	}
 	c.cursor = n
+	return nil
 }
 
 func (c *IntComputer) setRelativeBase(n int64) {
 	c.relativeBase = n
 }
 
-func (c *IntComputer) nextOperation() Operation {
+func (c *IntComputer) nextOperation() (Operation, error) {
 	_, ok := c.memory[c.cursor]
 	if !ok {
-		return NoOp
+		return NoOp, nil
 	}
-	return Operation(c.nextInt())
-}
-
-func (c *IntComputer) nextOpFunc() OpFunc {
-	if !c.nasNext() {
-		return nil
+	nextInt, err := c.nextInt()
+	if err != nil {
+		return NoOp, err
 	}
-	opCode := c.nextInt()
-	return c.opFuncs[opCode]
+	return Operation(nextInt), nil
 }
 
 func (c *IntComputer) nasNext() bool {
@@ -198,30 +215,37 @@ func (c *IntComputer) nasNext() bool {
 	return ok
 }
 
-func (c *IntComputer) ReadPosition(pos int64) int64 {
-	return c.memory[pos]
+func (c *IntComputer) ReadPosition(pos int64) (int64, error) {
+	if pos < 0 {
+		return 0, c.NewError("tried reading from a negative position")
+	}
+	return c.memory[pos], nil
 }
 
-func (c *IntComputer) writePosition(pos int64, rel bool ,val int64) {
+func (c *IntComputer) writePosition(pos int64, rel bool, val int64) error {
 	target := pos
 	if rel {
 		target = pos + c.relativeBase
 	}
+	if target < 0 {
+		return c.NewError("attempting to write to a negative register")
+	}
 	c.memory[target] = val
+	return nil
 }
 
-func (c *IntComputer) nextInt() int64 {
-	res := c.ReadPosition(c.cursor)
+func (c *IntComputer) nextInt() (int64, error) {
 	c.cursor++
-	return res
+	return c.ReadPosition(c.cursor - 1)
 }
 
-func (c *IntComputer) nextPtr(rel bool) int64 {
-	ptr := c.nextInt()
-
+func (c *IntComputer) nextPtr(rel bool) (int64, error) {
+	ptr, err := c.nextInt()
+	if err != nil {
+		return 0, err
+	}
 	if rel {
 		ptr = ptr + c.relativeBase
-		_ = ptr
 	}
 	return c.ReadPosition(ptr)
 }

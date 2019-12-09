@@ -18,7 +18,7 @@ func calcNounVerb(noun, verb int64) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return c.ReadPosition(0), nil
+	return c.ReadPosition(0)
 }
 
 func TestStage2(t *testing.T) {
@@ -65,5 +65,7 @@ func Test_go(t *testing.T) {
 	input[2] = 2
 	c := intcomputer.NewIntComputer(input, nil, nil)
 	assert.NoError(t, c.RunOperations())
-	assert.Equal(t, int64(3790689), c.ReadPosition(0))
+	val, err := c.ReadPosition(0)
+	assert.NoError(t, err)
+	assert.Equal(t, int64(3790689), val)
 }

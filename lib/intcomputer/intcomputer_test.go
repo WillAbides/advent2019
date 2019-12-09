@@ -140,7 +140,7 @@ func TestOperation_OpCode(t *testing.T) {
 func TestOperation_ParamValues(t *testing.T) {
 	c := NewIntComputer([]int64{1, 2, 3, 4, 5}, nil, nil)
 	o := Operation(10101)
-	got := o.ParamValues(c.opComputer(), 3)
+	got, _ := o.ParamValues(c.opComputer(), 3)
 	assert.Equal(t, []int64{1, 3, 3}, got)
 }
 
