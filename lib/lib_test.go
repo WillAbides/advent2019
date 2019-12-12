@@ -71,3 +71,102 @@ func TestRepeatAtIndex(t *testing.T) {
 		})
 	}
 }
+
+
+func TestReduceRatio(t *testing.T) {
+	for _, td := range []struct {
+		numerator, denominator, wantNumerator, wantDenominator int
+	}{
+		{
+			numerator:       2,
+			denominator:     6,
+			wantNumerator:   1,
+			wantDenominator: 3,
+		},
+		{
+			numerator:       4,
+			denominator:     6,
+			wantNumerator:   2,
+			wantDenominator: 3,
+		},
+		{
+			numerator:       24,
+			denominator:     36,
+			wantNumerator:   2,
+			wantDenominator: 3,
+		},
+		{
+			numerator:       -24,
+			denominator:     36,
+			wantNumerator:   -2,
+			wantDenominator: 3,
+		},
+		{
+			numerator:       24,
+			denominator:     -36,
+			wantNumerator:   2,
+			wantDenominator: -3,
+		},
+		{
+			numerator:       1,
+			denominator:     -36,
+			wantNumerator:   1,
+			wantDenominator: -36,
+		},
+		{
+			numerator:       0,
+			denominator:     -36,
+			wantNumerator:   0,
+			wantDenominator: -1,
+		},
+		{
+			numerator:       -24,
+			denominator:     0,
+			wantNumerator:   -1,
+			wantDenominator: 0,
+		},
+	} {
+		t.Run(fmt.Sprintf("%d/%d", td.numerator, td.denominator), func(t *testing.T) {
+			gotN, gotD := ReduceRatio(td.numerator, td.denominator)
+			assert.Equal(t, td.wantNumerator, gotN)
+			assert.Equal(t, td.wantDenominator, gotD)
+		})
+	}
+}
+
+func TestPrimeFactors(t *testing.T) {
+	for _, td := range []struct {
+		input uint
+		want  []uint
+	}{
+		{
+			input: 2,
+			want:  []uint{2},
+		},
+		{
+			input: 7,
+			want:  []uint{7},
+		},
+		{
+			input: 23,
+			want:  []uint{23},
+		},
+		{
+			input: 12,
+			want:  []uint{2, 2, 3},
+		},
+		{
+			input: 360,
+			want:  []uint{2, 2, 2, 3, 3, 5},
+		},
+		{
+			input: 1067,
+			want:  []uint{97, 11},
+		},
+	} {
+		t.Run(fmt.Sprintf("%d", td.input), func(t *testing.T) {
+			got := PrimeFactors(td.input)
+			assert.ElementsMatch(t, td.want, got)
+		})
+	}
+}

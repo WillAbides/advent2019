@@ -141,3 +141,59 @@ func StringDigits(str string) []int {
 	}
 	return result
 }
+
+
+// Get all prime factors of a given number n
+func PrimeFactors(n uint) []uint {
+	factors := make([]uint, 0, n/2)
+	if n < 2 {
+		return factors
+	}
+
+	for i := uint(2); i*i <= n; i++ {
+		for n%i == 0 {
+			factors = append(factors, i)
+			n = n / i
+		}
+	}
+
+	if n > 1 {
+		factors = append(factors, n)
+	}
+
+	return factors
+}
+
+func ReduceRatio(numerator, denominator int) (int, int) {
+	negN := 1
+	negD := 1
+	if numerator < 0 {
+		negN = -1
+		numerator *= negN
+	}
+	if denominator < 0 {
+		negD = -1
+		denominator *= negD
+	}
+	if numerator == 0 {
+		denominator = 1
+	}
+	if denominator == 0 {
+		numerator = 1
+	}
+	nFactors := PrimeFactors(uint(numerator))
+	dFactors := PrimeFactors(uint(denominator))
+factorloop:
+	for _, nFactor := range nFactors {
+		for _, dFactor := range dFactors {
+			if nFactor == dFactor {
+				factor := int(nFactor)
+				numerator, denominator = ReduceRatio(numerator/factor, denominator/factor)
+				break factorloop
+			}
+		}
+	}
+	numerator *= negN
+	denominator *= negD
+	return numerator, denominator
+}
